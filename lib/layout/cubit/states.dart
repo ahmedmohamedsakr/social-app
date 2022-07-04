@@ -4,6 +4,9 @@ class SocialGetUserLoadingState extends SocialStates{}
 class SocialGetUserSuccessState extends SocialStates{}
 class SocialGetUserErrorState extends SocialStates{}
 
+class SocialGetAllUserSuccessState extends SocialStates{}
+class SocialGetAllUserErrorState extends SocialStates{}
+
 class SocialChangeBottomNavState extends SocialStates{}
 class SocialNewPostState extends SocialStates{}
 
@@ -28,4 +31,29 @@ class SocialCreatePostErrorState extends SocialStates{}
 
 class SocialGetPostsLoadingState extends SocialStates{}
 class SocialGetPostsSuccessState extends SocialStates{}
-class SocialGetPostsErrorState extends SocialStates{}
+class SocialGetPostsErrorState extends SocialStates{
+  final error;
+  SocialGetPostsErrorState(this.error);
+}
+
+class SocialGetMessagesSuccessState extends SocialStates{}
+
+
+class SocialLikePostSuccessState extends SocialStates{}
+class SocialLikePostErrorState extends SocialStates{
+  final error;
+  SocialLikePostErrorState(this.error);
+}
+
+class SocialCommentPostSuccessState extends SocialStates{}
+class SocialCommentPostErrorState extends SocialStates{
+  final error;
+  SocialCommentPostErrorState(this.error);
+}
+
+class SocialSendMessageSuccessState extends SocialStates{}
+class SocialSendMessageErrorState extends SocialStates{
+  final error;
+  SocialSendMessageErrorState(this.error);
+}
+

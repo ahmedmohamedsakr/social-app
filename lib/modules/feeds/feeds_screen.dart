@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/layout/cubit/cubit.dart';
 import 'package:social_app/layout/cubit/states.dart';
 import 'package:social_app/models/social_model/post_model.dart';
+import 'package:social_app/modules/new_comment/new_comment_screen.dart';
+import 'package:social_app/shared/components/components.dart';
 import 'package:social_app/shared/styles/icon_broken.dart';
 
 class FeedsScreen extends StatelessWidget {
@@ -13,64 +15,68 @@ class FeedsScreen extends StatelessWidget {
         // TODO: implement listener
       },
       builder: (context, state) {
-        return SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              Card(
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                elevation: 5.0,
-                margin: EdgeInsets.all(
-                  8.0,
-                ),
-                child: Stack(
-                  alignment: AlignmentDirectional.bottomEnd,
+        return SocialCubit.get(context).posts.isNotEmpty &&
+                SocialCubit.get(context).userModel != null
+            ? SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
                   children: [
-                    Image(
-                      image: NetworkImage(
-                        'https://img.freepik.com/free-photo/photo-delighted-cheerful-afro-american-woman-with-crisp-hair-points-away-shows-blank-space-happy-advertise-item-sale-wears-orange-jumper-demonstrates-where-clothes-shop-situated_273609-26392.jpg?t=st=1656166701~exp=1656167301~hmac=6a04dd60fd0ba54466e9a2e087f28a54274e5e61f606626c245f802fa04c0ea6&w=1060',
+                    Card(
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      elevation: 5.0,
+                      margin: EdgeInsets.all(
+                        8.0,
                       ),
-                      width: double.infinity,
-                      height: 240.0,
-                      fit: BoxFit.cover,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Text(
-                        'communicate with your friends',
-                        style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 16.0,
+                      child: Stack(
+                        alignment: AlignmentDirectional.bottomEnd,
+                        children: [
+                          Image(
+                            image: NetworkImage(
+                              'https://img.freepik.com/free-photo/photo-delighted-cheerful-afro-american-woman-with-crisp-hair-points-away-shows-blank-space-happy-advertise-item-sale-wears-orange-jumper-demonstrates-where-clothes-shop-situated_273609-26392.jpg?t=st=1656166701~exp=1656167301~hmac=6a04dd60fd0ba54466e9a2e087f28a54274e5e61f606626c245f802fa04c0ea6&w=1060',
                             ),
+                            width: double.infinity,
+                            height: 240.0,
+                            fit: BoxFit.cover,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Text(
+                              'communicate with your friends',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontSize: 16.0,
+                                  ),
+                            ),
+                          ),
+                        ],
                       ),
+                    ),
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) => buildPostItem(
+                        context,
+                        SocialCubit.get(context).posts[index],
+                        index,
+                      ),
+                      separatorBuilder: (context, index) => const SizedBox(
+                        height: 5.0,
+                      ),
+                      itemCount: SocialCubit.get(context).posts.length,
                     ),
                   ],
                 ),
-              ),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) =>
-                    SocialCubit.get(context).posts != null
-                        ? buildPostItem(
-                            context,
-                            SocialCubit.get(context).posts![index],
-                          )
-                        : const CircularProgressIndicator(),
-                separatorBuilder: (context, index) => const SizedBox(
-                  height: 5.0,
-                ),
-                itemCount: SocialCubit.get(context).posts!.length,
-              ),
-            ],
-          ),
-        );
+              )
+            : const Center(child: CircularProgressIndicator());
       },
     );
   }
 
-  Widget buildPostItem(context, PostModel model) {
+  Widget buildPostItem(context, PostModel model, int index) {
     return Card(
       clipBehavior: Clip.antiAliasWithSaveLayer,
       elevation: 5.0,
@@ -234,7 +240,7 @@ class FeedsScreen extends StatelessWidget {
                               width: 10.0,
                             ),
                             Text(
-                              '120',
+                              '${SocialCubit.get(context).likes[index]}',
                               style: Theme.of(context).textTheme.caption,
                             ),
                           ],
@@ -243,12 +249,10 @@ class FeedsScreen extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 5.0,
-                      ),
-                      child: InkWell(
-                        onTap: () {},
+                    child: InkWell(
+                      onTap: () {},
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -261,7 +265,7 @@ class FeedsScreen extends StatelessWidget {
                               width: 10.0,
                             ),
                             Text(
-                              '120 comments',
+                              '${SocialCubit.get(context).comments[index]} comments',
                               style: Theme.of(context).textTheme.caption,
                             ),
                           ],
@@ -289,7 +293,8 @@ class FeedsScreen extends StatelessWidget {
                         CircleAvatar(
                           radius: 18.0,
                           backgroundImage: NetworkImage(
-                              'https://img.freepik.com/free-photo/promotion-concept-surprised-curly-haired-woman-points-index-finger-offers-huge-sale-shows-blank-space-your-banner-design-has-shocked-expression-dressed-casually-poses-against-white-wall_273609-61076.jpg?w=740'),
+                            SocialCubit.get(context).userModel?.profile ?? '',
+                          ),
                         ),
                         const SizedBox(
                           width: 15.0,
@@ -297,14 +302,24 @@ class FeedsScreen extends StatelessWidget {
                         Text(
                           'write a comment...',
                           style:
-                              Theme.of(context).textTheme.caption?.copyWith(),
+                              Theme.of(context).textTheme.caption,
                         ),
                       ],
                     ),
+                    onTap: () {
+                      navigateTo(
+                          context: context,
+                          page: NewCommentScreen(
+                            index: index,
+                          ));
+                    },
                   ),
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    SocialCubit.get(context).likePost(
+                        postId: SocialCubit.get(context).postId[index]);
+                  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
